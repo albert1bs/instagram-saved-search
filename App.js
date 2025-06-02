@@ -23,6 +23,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 I18nManager.allowRTL(true);
 I18nManager.forceRTL(true);
 
+// API Configuration - Updated to use deployed Render URL
+const API_BASE_URL = 'https://instagram-saved-search.onrender.com';
+
 // Instagram API class that connects to the Python server
 class InstagramAPI {
   constructor() {
@@ -30,7 +33,7 @@ class InstagramAPI {
     this.username = '';
     this.sessionData = null;
     // Use your local server - change this IP if needed
-    this.baseURL = 'http://localhost:5000/api';
+    this.baseURL = API_BASE_URL;
     // For mobile device, you might need to use your computer's IP:
     // this.baseURL = 'http://192.168.3.82:5000/api'; // Replace XXX with your IP
   }

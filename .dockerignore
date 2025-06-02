@@ -35,43 +35,31 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# Sessions and logs
+sessions/
+*.log
+
 # Git
 .git/
 .gitignore
 
-# Node.js (for mobile app)
+# Node.js (not needed for Python API)
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Expo
-.expo/
-.expo-shared/
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.temp
-
-# Documentation
+# Deployment files not needed in container
+docker-compose.yml
+Dockerfile
+.dockerignore
 README*.md
-*.md
+GIT_UPLOAD_GUIDE.md
+DEPLOYMENT_README.md
 
-# Web test files
-web-test.html
-*.html
-
-# Mobile app files
+# Mobile app files (not needed for API server)
 App.js
 package.json
 app.json
 babel.config.js
-
-# Other Python apps
-app.py
-app_working.py
-start.py
-get_ip.py 
+web-test.html 

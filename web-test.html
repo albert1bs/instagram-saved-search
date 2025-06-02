@@ -234,7 +234,7 @@
         <div class="server-status">
             <h3>🔗 סטטוס השרת</h3>
             <p id="server-status">בודק חיבור לשרת...</p>
-            <p><strong>כתובת שרת:</strong> http://localhost:5000/api</p>
+            <p><strong>כתובת שרת:</strong> https://instagram-saved-search.onrender.com/api</p>
         </div>
         
         <div class="login-card">
@@ -289,7 +289,7 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:5000/api';
+        const API_BASE_URL = 'https://instagram-saved-search.onrender.com';
         let allPosts = [];
         let filteredPosts = [];
         let currentUser = '';
@@ -297,7 +297,7 @@
         // Check server status on load
         async function checkServerStatus() {
             try {
-                const response = await fetch(`${API_BASE}/health`);
+                const response = await fetch(`${API_BASE_URL}/health`);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -324,7 +324,7 @@
             try {
                 showStatus('מתחבר לאינסטגרם...', 'info');
                 
-                const response = await fetch(`${API_BASE}/login`, {
+                const response = await fetch(`${API_BASE_URL}/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -364,7 +364,7 @@
                     </div>
                 `;
 
-                const response = await fetch(`${API_BASE}/saved-posts?username=${currentUser}`);
+                const response = await fetch(`${API_BASE_URL}/saved-posts?username=${currentUser}`);
                 const data = await response.json();
 
                 if (data.success) {
