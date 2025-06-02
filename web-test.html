@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 חיפוש רילס שמורים - בדיקת API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #E4405F, #F56040);
+            min-height: 100vh;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+        
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: right;
+            direction: rtl;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #E4405F;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #E4405F, #F56040);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .login-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .posts-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .post-card {
+            border: 1px solid #eee;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .post-owner {
+            font-weight: bold;
+            color: #E4405F;
+        }
+        
+        .post-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .post-caption {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .view-btn {
+            background: #E4405F;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #E4405F;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .server-status {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .server-status h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .server-status p {
+            color: rgba(255,255,255,0.9);
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 חיפוש רילס שמורים</h1>
+            <p>בדיקת חיבור לשרת Instagram API</p>
+        </div>
+        
+        <div class="server-status">
+            <h3>🔗 סטטוס השרת</h3>
+            <p id="server-status">בודק חיבור לשרת...</p>
+            <p><strong>כתובת שרת:</strong> http://localhost:5000/api</p>
+        </div>
+        
+        <div class="login-card">
+            <h2 style="text-align: center; margin-bottom: 20px; color: #333;">התחברות לאינסטגרם</h2>
+            
+            <div id="status-message"></div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">שם משתמש באינסטגרם:</label>
+                    <input type="text" id="username" placeholder="שם_המשתמש_שלך" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">סיסמת אינסטגרם:</label>
+                    <input type="password" id="password" placeholder="הסיסמה_שלך" required>
+                </div>
+                
+                <button type="submit" class="login-btn" id="login-btn">
+                    התחבר לאינסטגרם
+                </button>
+            </form>
+        </div>
+        
+        <div id="posts-section" style="display: none;">
+            <div class="posts-container">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #333;">הפוסטים השמורים שלך</h2>
+                
+                <!-- Search Bar -->
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; background: #f1f3f4; border-radius: 25px; padding: 10px 15px;">
+                        <span style="margin-left: 10px;">🔍</span>
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            placeholder="חפש בכיתובים או שמות משתמשים..." 
+                            style="flex: 1; border: none; background: transparent; font-size: 16px; text-align: right; direction: rtl; outline: none;"
+                            oninput="searchPosts()"
+                        />
+                        <button 
+                            id="clear-search" 
+                            onclick="clearSearch()" 
+                            style="background: none; border: none; cursor: pointer; display: none; color: #666; font-size: 18px;"
+                        >×</button>
+                    </div>
+                    <div id="search-results" style="margin-top: 10px; text-align: center; color: #666; font-size: 14px;"></div>
+                </div>
+                
+                <div id="posts-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let allPosts = [];
+        let filteredPosts = [];
+        let currentUser = '';
+
+        // Check server status on load
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('server-status').innerHTML = 
+                        `✅ ${data.message} (${new Date(data.timestamp).toLocaleString('he-IL')})`;
+                } else {
+                    throw new Error('Server responded but not healthy');
+                }
+            } catch (error) {
+                document.getElementById('server-status').innerHTML = 
+                    `❌ השרת לא פועל. אנא הפעל: py api_server.py`;
+                console.error('Server check failed:', error);
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        // Login function
+        async function login(username, password) {
+            try {
+                showStatus('מתחבר לאינסטגרם...', 'info');
+                
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUser = username;
+                    showStatus(data.message, 'success');
+                    
+                    // Hide login form and show posts section
+                    document.getElementById('login-form').style.display = 'none';
+                    document.getElementById('posts-section').style.display = 'block';
+                    
+                    // Load saved posts
+                    loadSavedPosts();
+                } else {
+                    showStatus(data.message, 'error');
+                }
+            } catch (error) {
+                showStatus('שגיאה בחיבור לשרת. וודא שהשרת פועל.', 'error');
+                console.error('Login error:', error);
+            }
+        }
+
+        // Load saved posts
+        async function loadSavedPosts() {
+            try {
+                const postsDiv = document.getElementById('posts-list');
+                postsDiv.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>טוען פוסטים שמורים...</p>
+                    </div>
+                `;
+
+                const response = await fetch(`${API_BASE}/saved-posts?username=${currentUser}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    allPosts = data.posts;
+                    filteredPosts = [...allPosts];
+                    displayPosts(filteredPosts);
+                    updateSearchResults('', allPosts.length, allPosts.length);
+                    showStatus(`${data.message} ✨`, 'success');
+                } else {
+                    showStatus(data.message, 'error');
+                    postsDiv.innerHTML = '<p style="text-align: center; color: #666;">לא ניתן לטעון פוסטים</p>';
+                }
+            } catch (error) {
+                showStatus('שגיאה בטעינת פוסטים', 'error');
+                console.error('Load posts error:', error);
+            }
+        }
+
+        // Display posts
+        function displayPosts(posts) {
+            const postsDiv = document.getElementById('posts-list');
+            
+            if (posts.length === 0) {
+                postsDiv.innerHTML = '<p style="text-align: center; color: #666;">לא נמצאו פוסטים שמורים</p>';
+                return;
+            }
+
+            const postsHTML = posts.map(post => `
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="post-owner">@${post.owner}</div>
+                        <div class="post-date">${post.date}</div>
+                    </div>
+                    <div class="post-caption">${post.caption}</div>
+                    <div class="post-stats">
+                        <span>❤️ ${post.likes?.toLocaleString() || 0} לייקים</span>
+                        <a href="${post.url}" target="_blank" class="view-btn">צפה בפוסט</a>
+                    </div>
+                </div>
+            `).join('');
+
+            postsDiv.innerHTML = postsHTML;
+        }
+
+        // Form submission
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showStatus('אנא הזן גם שם משתמש וגם סיסמה', 'error');
+                return;
+            }
+
+            const loginBtn = document.getElementById('login-btn');
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'מתחבר...';
+
+            await login(username, password);
+
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'התחבר לאינסטגרם';
+        });
+
+        // Search functionality
+        function searchPosts() {
+            const searchInput = document.getElementById('search-input');
+            const clearButton = document.getElementById('clear-search');
+            const query = searchInput.value.trim().toLowerCase();
+            
+            // Show/hide clear button
+            clearButton.style.display = query ? 'block' : 'none';
+            
+            if (!query) {
+                filteredPosts = [...allPosts];
+            } else {
+                filteredPosts = allPosts.filter(post => {
+                    const caption = (post.caption || '').toLowerCase();
+                    const owner = (post.owner || '').toLowerCase();
+                    return caption.includes(query) || owner.includes(query);
+                });
+            }
+            
+            displayPosts(filteredPosts);
+            updateSearchResults(query, filteredPosts.length, allPosts.length);
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('search-input');
+            const clearButton = document.getElementById('clear-search');
+            
+            searchInput.value = '';
+            clearButton.style.display = 'none';
+            filteredPosts = [...allPosts];
+            displayPosts(filteredPosts);
+            updateSearchResults('', allPosts.length, allPosts.length);
+        }
+
+        function updateSearchResults(query, filtered, total) {
+            const resultsDiv = document.getElementById('search-results');
+            if (query) {
+                resultsDiv.textContent = `נמצאו ${filtered} פוסטים מתוך ${total} (חיפוש: "${query}")`;
+                resultsDiv.style.color = filtered > 0 ? '#4CAF50' : '#f44336';
+            } else {
+                resultsDiv.textContent = `מציג ${total} פוסטים שמורים`;
+                resultsDiv.style.color = '#666';
+            }
+        }
+
+        // Check server status on page load
+        checkServerStatus();
+    </script>
+</body>
+</html> 
